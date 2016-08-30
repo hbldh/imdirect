@@ -16,7 +16,7 @@ import os
 import sys
 import re
 from codecs import open
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 basedir = os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +31,7 @@ if sys.argv[-1] == 'publish':
 def read(f):
     return open(f, encoding='utf-8').read()
 
-with open('imdirect.py', 'r') as fd:
+with open('imdirect/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
@@ -45,7 +45,7 @@ setup(
     description='Determine the determine_orientation of a camera image from its EXIF tag',
     long_description=read('README.rst'),
     license='MIT',
-    keywords=['exif'],
+    keywords=['exif', 'jpeg', 'PIL', 'Pillow'],
     classifiers=[
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
@@ -58,12 +58,11 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
     ],
-    py_modules=['imdirect'],
     install_requires=[
-        'piexif>=1.0.5',
+        'Pillow>=3.3.1',
+        'piexif>=1.0.5'
     ],
-    zip_safe=False,
-    include_package_data=True,
+    packages=find_packages(exclude=['tests', 'docs']),
     test_suite="tests",
     platforms='any',
     dependency_links=[],

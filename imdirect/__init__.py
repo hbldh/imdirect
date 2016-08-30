@@ -1,7 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
 imdirect
 ========
-
-|Build Status| |Coverage Status|
 
 The orientation of the photographed
 object or scene with respect to the digital camera is encoded in the resulting
@@ -15,14 +16,6 @@ autorotate method that can be used for addressing this issue.
 
 It will eventually feature a ``PIL.Image.Image`` subclass that autorotates
 internally and updates and ports Exif data when saving the image to new file.
-
-
-Installation
-------------
-
-::
-
-    pip install git+https://www.github.com/hbldh/imdirect
 
 Usage
 -----
@@ -44,16 +37,23 @@ Usage
    In [6]: imdirect.autorotate(i)
    Out[6]: <PIL.Image.Image image mode=RGB size=4032x3024 at 0x7F3DFD89CED0>
 
+:copyright: 2016-08-30 by hbldh <henrik.blidh@nedomkull.com>
 
+"""
 
-Tests
-~~~~~
+import re
 
-TBD.
+from ._exceptions import ImDirectException
+from ._pil import autorotate, determine_orientation
 
-.. |Build Status| image:: https://travis-ci.org/hbldh/imdirect.svg?branch=master
-   :target: https://travis-ci.org/hbldh/imdirect
-.. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/imdirect/badge.svg?branch=master
-   :target: https://coveralls.io/github/hbldh/imdirect?branch=master
+__all__ = ['autorotate', 'determine_orientation', 'ImDirectException']
 
-
+# Version information.
+__version__ = '0.2.0'
+version = __version__  # backwards compatibility name
+try:
+    version_info = [int(x) if x.isdigit() else x for x in
+                    re.match('^([0-9]+)\.([0-9]+)[\.]*([0-9]*)(.*)$',
+                             __version__, re.DOTALL).groups()]
+except Exception:
+    version_info = ()
