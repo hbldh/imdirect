@@ -66,11 +66,20 @@ The package can also be used without monkey patching ``PIL`` and instead using t
 Tests
 ~~~~~
 
-Tests can be run with `pytest <>`_
+Tests can be run with `pytest <http://doc.pytest.org/en/latest/>`_:
 
 .. code:: sh
 
+   Testing started at 13:28 ...
+   ============================= test session starts ==============================
+   platform linux2 -- Python 2.7.12, pytest-3.0.1, py-1.4.31, pluggy-0.3.1
+   rootdir: /home/hbldh/Repos/autopil, inifile:
+   collected 4 items
 
+   test_autorotate.py ...
+   test_monkey_patching.py .
+
+   =========================== 4 passed in 0.08 seconds ===========================
 
 References
 ----------
