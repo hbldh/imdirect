@@ -44,7 +44,7 @@ Usage
 import re
 
 from ._exceptions import ImDirectException
-from ._pil import autorotate, determine_orientation
+from ._pil import autorotate, determine_orientation, AutoRotateImage
 
 __all__ = ['autorotate', 'determine_orientation', 'ImDirectException']
 

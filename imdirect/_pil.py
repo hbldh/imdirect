@@ -15,16 +15,40 @@ from __future__ import absolute_import
 
 
 from PIL import Image, ExifTags
+from PIL.Image import open as imopen
+from PIL.JpegImagePlugin import _getexif
 
 from ._util import ROTATION_NEEDED
 from ._exceptions import ImDirectException
-
+import tempfile
 
 EXIFKEYS = {ExifTags.TAGS.get(k): k for k in ExifTags.TAGS}
 
 
+def autorotate_open(fp, mode="r"):
+    img = imopen(fp, mode)
+    img_rot = autorotate(img)
+    with tempfile.NamedTemporaryFile(suffix='.jpg') as f:
+        img_rot.save(f, format='jpeg')
+    return img_rot
+
+Image.open = autorotate_open
+
+
+
 def autorotate(image):
     """Rotate and return an image according to its Exif information.
+
+    ROTATION_NEEDED = {
+        1: 0,
+        2: 0,
+        3: 180,
+        4: 180,
+        5: -90,
+        6: -90,
+        7: 90,
+        8: 90,
+    }
 
     :param :class:`PIL.Image.Image` image: PIL image to rotate
     :return: A :class:`PIL.Image.Image` image.
@@ -36,7 +60,19 @@ def autorotate(image):
         raise ImDirectException("No orientation available in EXIF tag.")
     if orientation_value in (2, 4, 5, 7):
         image = image.transpose(Image.FLIP_LEFT_RIGHT)
-    return image.rotate(ROTATION_NEEDED.get(orientation_value))
+
+    if orientation_value in (1, 2):
+        i = image
+    elif orientation_value in (3, 4):
+        i = image.transpose(Image.FLIP_TOP_BOTTOM)
+    elif orientation_value in (5, 6):
+        i = image.transpose(Image.ROTATE_270)
+    elif orientation_value in (7, 8):
+        i = image.transpose(Image.ROTATE_90)
+    else:
+        i = image
+
+    return i
 
 
 def determine_orientation(image):
