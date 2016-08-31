@@ -13,12 +13,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-import imdirect
 from PIL import Image
+import imdirect
 
-i = Image.open('2016-08-28 15.11.44.jpg')
-#i = imdirect.open('2016-08-28 15.11.44.jpg')
+img = Image.open('2016-08-28 15.11.44.jpg')
+# Print image as string and the EXIF orientation.
+print(img)
+print("Orientation: {0}".format(img._getexif().get(274)))
 
-#img = imdirect.autorotate(i)
-i.show()
-print(i)
+imdirect.monkey_patch()
+img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
+print(img_autorotated)
+print("Orientation: {0}".format(img_autorotated._getexif().get(274)))
+

@@ -42,7 +42,7 @@ setup(
     author='Henrik Blidh',
     author_email='henrik.blidh@nedomkull.com',
     url='https://github.com/hbldh/imdirect',
-    description='Determine the determine_orientation of a camera image from its EXIF tag',
+    description='Determine the _PIL_determine_orientation of a camera image from its EXIF tag',
     long_description=read('README.rst'),
     license='MIT',
     keywords=['exif', 'jpeg', 'PIL', 'Pillow'],
@@ -55,7 +55,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Operating System :: OS Independent',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
     ],
     install_requires=[

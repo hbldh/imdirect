@@ -5,17 +5,17 @@ imdirect
 
 The orientation of the photographed
 object or scene with respect to the digital camera is encoded in the resulting
-image's `Exif <https://en.wikipedia.org/wiki/Exif>`_ data (given that it is
-saved as a JPEG).
+image's [1]_ data (given that it is saved as a JPEG). When working with such digital camera images,
+this orientation might lead to problems handling the image and is very often desired to be
+counteracted.
 
-When working with such digital camera images, this orientation might
-lead to problems handling the image and is very often desired to be
-counteracted. This module is a small extension to ``Pillow``, adding an
-autorotate method that can be used for addressing this issue.
+This module is a small extension to `Pillow <https://pillow.readthedocs.io/en/3.3.x/>`_,
+`monkey patching <https://en.wikipedia.org/wiki/Monkey_patch>`_
+the `PIL.Image.open <http://pillow.readthedocs.io/en/3.3.x/reference/Image.html#PIL.Image.open>`_ method
+to automatically rotate the image (by lossless methods) and update the Exif tag
+accordingly if the image is a JPEG.
 
-It will eventually feature a ``PIL.Image.Image`` subclass that autorotates
-internally and updates and ports Exif data when saving the image to new file.
-
+The package also features a save method that includes the Exif data by default when saving JPEGs.
 
 Installation
 ------------
@@ -27,22 +27,33 @@ Installation
 Usage
 -----
 
+Demonstration of the monkey patching and how it works.
+
 .. code:: python
 
-   In [1]: import imdirect
+   from PIL import Image
+   import imdirect
 
-   In [2]: from PIL import Pillow
+   img = Image.open('2016-08-28 15.11.44.jpg')
+   # Print image as string and the EXIF orientation.
+   print(img)
+   print("Orientation: {0}".format(img._getexif().get(274)))
 
-   In [3]: img = Image.open('2016-08-28 15.11.44.jpg')
+   # Apply the autorotate monkey patch.
+   imdirect.monkey_patch()
+   img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
+   print(img_autorotated)
+   print("Orientation: {0}".format(img_autorotated._getexif().get(274)))
 
-   In [4]: imdirect.determine_orientation(img)
-   Out[4]: 6
+The output of the above:
 
-   In [5]: img
-   Out[5]: <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F3DFD950990>
+.. code:: python
 
-   In [6]: imdirect.autorotate(i)
-   Out[6]: <PIL.Image.Image image mode=RGB size=4032x3024 at 0x7F3DFD89CED0>
+   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7FC3238AC810>
+   Orientation: 6
+   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7FC323875250>
+   Orientation: 1
+
 
 
 
@@ -50,6 +61,16 @@ Tests
 ~~~~~
 
 TBD.
+
+References
+----------
+
+.. [1] `Exif <https://en.wikipedia.org/wiki/Exif>`_
+
+.. [2] `Exif on Wikipedia <https://en.wikipedia.org/wiki/Exif>`_
+
+
+
 
 .. |Build Status| image:: https://travis-ci.org/hbldh/imdirect.svg?branch=master
    :target: https://travis-ci.org/hbldh/imdirect
