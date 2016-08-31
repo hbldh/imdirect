@@ -26,6 +26,16 @@ __all__ = ["autorotate", "autopil_open",
 
 EXIFKEYS = {ExifTags.TAGS.get(k): k for k in ExifTags.TAGS}
 
+# Py2/Py3 compatability.
+try:
+    string_types = basestring,
+    text_type = unicode
+    binary_type = str
+except NameError:
+    string_types = str,
+    text_type = str
+    binary_type = bytes
+
 
 class ImDirectException(Exception):
     """Simple exception class for the module."""
@@ -153,7 +163,11 @@ def autopil_open(fp, mode="r"):
     img = imopen(fp, mode)
     if img.format == 'JPEG':
         # Read Exif tag on image.
-        exif = piexif.load(fp)
+        if isinstance(fp, string_types):
+            exif = piexif.load(binary_type(fp))
+        else:
+            fp.seek(0)
+            exif = piexif.load(fp.read())
         # If orientation field is missing or equal to 1, nothing needs to be done.
         orientation_value = exif.get('0th', {}).get(piexif.ImageIFD.Orientation)
         if orientation_value is None or orientation_value == 1:

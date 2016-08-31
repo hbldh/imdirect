@@ -73,7 +73,7 @@ from ._autorotate import *
 
 
 # Version information.
-__version__ = '0.3.0'
+__version__ = '0.3.1.dev1'
 version = __version__  # backwards compatibility name
 try:
     version_info = [int(x) if x.isdigit() else x for x in
