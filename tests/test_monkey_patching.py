@@ -17,26 +17,26 @@ from __future__ import absolute_import
 import os
 
 from PIL import Image
-import autopil
+import imdirect
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_monkey_patching():
     image_path = os.path.join(this_dir, 'testfile_6.jpg')
-    autopil.monkey_patch(False)
+    imdirect.monkey_patch(False)
     img = Image.open(image_path)
     assert img.width == 300
     assert img.height == 225
     assert img._getexif().get(274) == 6
 
-    autopil.monkey_patch(True)
+    imdirect.monkey_patch(True)
     img = Image.open(image_path)
     assert img.width == 225
     assert img.height == 300
     assert img._getexif().get(274) == 1
 
-    autopil.monkey_patch(False)
+    imdirect.monkey_patch(False)
     img = Image.open(image_path)
     assert img.width == 300
     assert img.height == 225

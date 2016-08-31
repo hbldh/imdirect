@@ -16,13 +16,13 @@ from __future__ import absolute_import
 import io
 
 from PIL import Image, ExifTags
-from PIL.Image import open as imopen
+from PIL.Image import open as pil_open
 import piexif
 
 __all__ = [
     "ImDirectException",
     "autorotate",
-    "autopil_open",
+    "imdirect_open",
     "monkey_patch",
     "update_exif_for_rotated_image",
     "save_with_exif_info"
@@ -146,7 +146,7 @@ def update_exif_for_rotated_image(exif):
     return exif
 
 
-def autopil_open(fp, mode="r"):
+def imdirect_open(fp, mode="r"):
     """Opens, identifies the given image file, and rotates it if it is a JPEG.
 
     Note that this method does NOT employ the lazy loading methodology that
@@ -162,7 +162,7 @@ def autopil_open(fp, mode="r"):
        opened and identified.
 
     """
-    img = imopen(fp, mode)
+    img = pil_open(fp, mode)
     if img.format == 'JPEG':
         # Read Exif tag on image.
         if isinstance(fp, string_types):
@@ -185,7 +185,7 @@ def autopil_open(fp, mode="r"):
         with io.BytesIO() as bio:
             img_rot.save(bio, format='jpeg', exif=piexif.dump(exif))
             bio.seek(0)
-            img_rot_new = imopen(bio, mode)
+            img_rot_new = pil_open(bio, mode)
             # Since we use a BytesIO we need to avoid the lazy loading of the PIL image.
             # Therefore, we explicitly load the data here.
             img_rot_new.load()
@@ -201,9 +201,9 @@ def monkey_patch(enabled=True):
 
     """
     if enabled:
-        Image.open = autopil_open
+        Image.open = imdirect_open
     else:
-        Image.open = imopen
+        Image.open = pil_open
 
 
 def save_with_exif_info(img, *args, **kwargs):

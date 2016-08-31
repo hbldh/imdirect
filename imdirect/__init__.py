@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-autopil
-=======
+imdirect
+========
 
 PIL extension performing automatic rotation of opened JPEG images.
 
@@ -28,7 +28,7 @@ Installation
 
 ::
 
-    pip install git+https://www.github.com/hbldh/autopil
+    pip install git+https://www.github.com/hbldh/imdirect
 
 Usage
 -----
@@ -38,12 +38,12 @@ Demonstration of the monkey patching and how it works.
 .. code:: python
 
    from PIL import Image
-   import autopil
+   import imdirect
 
    img = Image.open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
 
-   autopil.monkey_patch()
+   imdirect.monkey_patch()
    img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
 
@@ -55,13 +55,13 @@ The output of the above:
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
 
 The package can also be used without monkey patching `PIL` and instead using the
-`autopil.autopil_open` method directly:
+`imdirect.imdirect_open` method directly:
 
 .. code:: python
 
-   from autopil import autopil_open
+   from imdirect import imdirect_open
 
-   img = autopil_open('2016-08-28 15.11.44.jpg')
+   img = imdirect_open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
    # Output: "<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DFCE50>, Orientation: 1"
 
@@ -73,7 +73,7 @@ from ._autorotate import *
 
 
 # Version information.
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 version = __version__  # backwards compatibility name
 try:
     version_info = [int(x) if x.isdigit() else x for x in

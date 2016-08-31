@@ -1,7 +1,7 @@
 [run]
 branch = True
-source = autopil
-include = */autopil/*
+source = imdirect
+include = */imdirect/*
 omit =
     */setup.py
 

@@ -19,6 +19,6 @@ install:
   - "pip install pytest-cov"
   - "pip install python-coveralls"
   - "pip install -e ."
-script: py.test tests/ --cov autopil --cov-report term-missing
+script: py.test tests/ --cov imdirect --cov-report term-missing
 after_success:
   - coveralls
