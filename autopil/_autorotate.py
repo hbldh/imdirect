@@ -19,12 +19,24 @@ from PIL import Image, ExifTags
 from PIL.Image import open as imopen
 import piexif
 
-__all__ = ["autorotate", "autopil_open",
-           "monkey_patch",
-           "update_exif_for_rotated_image",
-           "save_with_exif_info", "ImDirectException"]
+__all__ = [
+    "ImDirectException",
+    "autorotate",
+    "autopil_open",
+    "monkey_patch",
+    "update_exif_for_rotated_image",
+    "save_with_exif_info"
+]
 
-EXIFKEYS = {ExifTags.TAGS.get(k): k for k in ExifTags.TAGS}
+EXIF_KEYS = {ExifTags.TAGS.get(k): k for k in ExifTags.TAGS}
+
+
+try:  # Py2/Py3 Compatibility
+    string_types = basestring,
+    text_type_to_use = str
+except NameError:
+    string_types = str,
+    text_type_to_use = str
 
 
 class ImDirectException(Exception):
@@ -49,7 +61,7 @@ def autorotate(image):
     :return: A :py:class:`~PIL.Image.Image` image.
 
     """
-    orientation_value = image._getexif().get(EXIFKEYS.get('Orientation'))
+    orientation_value = image._getexif().get(EXIF_KEYS.get('Orientation'))
     if orientation_value is None:
         raise ImDirectException("No orientation available in Exif tag.")
     if orientation_value in (2, 4, 5, 7):
@@ -153,7 +165,12 @@ def autopil_open(fp, mode="r"):
     img = imopen(fp, mode)
     if img.format == 'JPEG':
         # Read Exif tag on image.
-        exif = piexif.load(fp)
+        if isinstance(fp, string_types):
+            exif = piexif.load(text_type_to_use(fp))
+        else:
+            fp.seek(0)
+            exif = piexif.load(fp.read())
+
         # If orientation field is missing or equal to 1, nothing needs to be done.
         orientation_value = exif.get('0th', {}).get(piexif.ImageIFD.Orientation)
         if orientation_value is None or orientation_value == 1:
@@ -163,14 +180,14 @@ def autopil_open(fp, mode="r"):
         exif = update_exif_for_rotated_image(exif)
 
         # Now, lets restore the output image to PIL.JpegImagePlugin.JpegImageFile class
-        # with the correct update Exif information.
+        # with the correct, updated Exif information.
         # Save image as JPEG to get a correct byte representation of the image and then read it back.
         with io.BytesIO() as bio:
             img_rot.save(bio, format='jpeg', exif=piexif.dump(exif))
             bio.seek(0)
             img_rot_new = imopen(bio, mode)
-            # Since we use a BytesIO we need to avoid the lazy loading of the PIL image, hence
-            # loading the data it explicitly here.
+            # Since we use a BytesIO we need to avoid the lazy loading of the PIL image.
+            # Therefore, we explicitly load the data here.
             img_rot_new.load()
         img = img_rot_new
 
@@ -194,7 +211,7 @@ def save_with_exif_info(img, *args, **kwargs):
 
     Wraps :py:method:`~PIL.Image.Image.save`.
 
-    :param :py:class:`~PIL.Image.Image` img: The PIL
+    :param :py:class:`~PIL.Image.Image` img: The PIL Image to save.
     :param args: The arguments for the `save` method of the Image class.
     :param kwargs: The keywords for the `save` method of the Image class.
 
@@ -204,33 +221,3 @@ def save_with_exif_info(img, *args, **kwargs):
     else:
         exif = img.info.get('exif')
     img.save(*args, exif=exif, **kwargs)
-
-
-def _PIL_determine_orientation(image):
-    """Get the Exif orientation value.
-
-    :param :py:class:`~PIL.Image.Image` image:
-    :return: Integer representing the orientation. (See table in documentation.)
-
-    """
-    try:
-        orientation_value = image._getexif().get(
-            EXIFKEYS.get('Orientation'))
-    except AttributeError:
-        raise ImDirectException("This image has no Exif data.")
-
-    return orientation_value
-
-
-def _piexif_determine_orientation(image_path):
-    """Get the Exif orientation value.
-
-    :param str image_path: The path to the JPEG image.
-    :return: Integer representing the orientation. (See table in documentation.)
-
-    """
-    d = piexif.load(image_path)
-    orientation_value = d.get('0th', ).get(piexif.ImageIFD.Orientation,
-        d.get('1st', ).get(piexif.ImageIFD.Orientation, None))
-
-    return orientation_value

@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = autopil
+include = */autopil/*
+omit =
+    */setup.py
+
+[report]
+exclude_lines =
+    except NameError
+    try:  # Py2/Py3 Compatibility
+
+
+
