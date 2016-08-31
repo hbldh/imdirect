@@ -14,13 +14,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import os
 
 from PIL import Image
 import autopil
 
+this_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_autorotate_1():
-    image_path = './testfile_6.jpg'
+    image_path = os.path.join(this_dir, 'testfile_6.jpg')
 
     img = Image.open(image_path)
     assert img.width == 300
@@ -34,7 +37,7 @@ def test_autorotate_1():
 
 
 def test_autopil_open_with_string_path():
-    image_path = './testfile_6.jpg'
+    image_path = os.path.join(this_dir, 'testfile_6.jpg')
 
     img = Image.open(image_path)
     assert img.width == 300
@@ -48,7 +51,7 @@ def test_autopil_open_with_string_path():
 
 
 def test_autopil_open_with_filelike():
-    image_path = './testfile_6.jpg'
+    image_path = os.path.join(this_dir, 'testfile_6.jpg')
     with open(image_path, 'r') as f:
         img = Image.open(f)
     assert img.width == 300

@@ -14,13 +14,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import os
 
 from PIL import Image
 import autopil
 
+this_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_monkey_patching():
-    image_path = './testfile_6.jpg'
+    image_path = os.path.join(this_dir, 'testfile_6.jpg')
     autopil.monkey_patch(False)
     img = Image.open(image_path)
     assert img.width == 300
