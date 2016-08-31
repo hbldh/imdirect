@@ -52,13 +52,13 @@ def test_autopil_open_with_string_path():
 
 def test_autopil_open_with_filelike():
     image_path = os.path.join(this_dir, 'testfile_6.jpg')
-    with open(image_path, 'r') as f:
+    with open(image_path, 'rb') as f:
         img = Image.open(f)
     assert img.width == 300
     assert img.height == 225
     assert img._getexif().get(274) == 6
 
-    with open(image_path, 'r') as f:
+    with open(image_path, 'rb') as f:
         img_rot = autopil.autopil_open(f)
     assert img_rot.width == 225
     assert img_rot.height == 300
