@@ -1,7 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
 autopil
 =======
-
-|Build Status| |Coverage Status|
 
 PIL extension performing automatic rotation of opened JPEG images.
 
@@ -10,7 +11,7 @@ Description
 
 The orientation of the photographed
 object or scene with respect to the digital camera is encoded in the resulting
-image's Exif [1]_ data (given that it is saved as a JPEG). When working with such digital camera images,
+image's [1]_ data (given that it is saved as a JPEG). When working with such digital camera images,
 this orientation might lead to problems handling the image and is very often desired to be
 counteracted.
 
@@ -48,7 +49,7 @@ Demonstration of the monkey patching and how it works.
 
 The output of the above:
 
-.. code:: sh
+.. code:: python
 
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F44B5E4FF10>, Orientation: 6
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
@@ -59,25 +60,24 @@ The package can also be used without monkey patching `PIL` and instead using the
 .. code:: python
 
    from autopil import autopil_open
+
    img = autopil_open('2016-08-28 15.11.44.jpg')
+   print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
+   # Output: "<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DFCE50>, Orientation: 1"
+
+"""
+
+import re
+
+from ._autorotate import *
 
 
-Tests
-~~~~~
-
-TBD.
-
-References
-----------
-
-.. [1] Exif on Wikipedia (`https://en.wikipedia.org/wiki/Exif`_)
-
-.. [2] Exif orientation (`http://sylvana.net/jpegcrop/exif_orientation.html`_)
-
-
-.. |Build Status| image:: https://travis-ci.org/hbldh/autopil.svg?branch=master
-   :target: https://travis-ci.org/hbldh/autopil
-.. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/autopil/badge.svg?branch=master
-   :target: https://coveralls.io/github/hbldh/autopil?branch=master
-
-
+# Version information.
+__version__ = '0.3.0'
+version = __version__  # backwards compatibility name
+try:
+    version_info = [int(x) if x.isdigit() else x for x in
+                    re.match('^([0-9]+)\.([0-9]+)[\.]*([0-9]*)(.*)$',
+                             __version__, re.DOTALL).groups()]
+except Exception:
+    version_info = ()
