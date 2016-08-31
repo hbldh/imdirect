@@ -39,7 +39,6 @@ except NameError:
     text_type_to_use = str
 
 
-
 class ImDirectException(Exception):
     """Simple exception class for the module."""
 
@@ -171,6 +170,7 @@ def autopil_open(fp, mode="r"):
         else:
             fp.seek(0)
             exif = piexif.load(fp.read())
+
         # If orientation field is missing or equal to 1, nothing needs to be done.
         orientation_value = exif.get('0th', {}).get(piexif.ImageIFD.Orientation)
         if orientation_value is None or orientation_value == 1:
@@ -180,14 +180,14 @@ def autopil_open(fp, mode="r"):
         exif = update_exif_for_rotated_image(exif)
 
         # Now, lets restore the output image to PIL.JpegImagePlugin.JpegImageFile class
-        # with the correct update Exif information.
+        # with the correct, updated Exif information.
         # Save image as JPEG to get a correct byte representation of the image and then read it back.
         with io.BytesIO() as bio:
             img_rot.save(bio, format='jpeg', exif=piexif.dump(exif))
             bio.seek(0)
             img_rot_new = imopen(bio, mode)
-            # Since we use a BytesIO we need to avoid the lazy loading of the PIL image, hence
-            # loading the data it explicitly here.
+            # Since we use a BytesIO we need to avoid the lazy loading of the PIL image.
+            # Therefore, we explicitly load the data here.
             img_rot_new.load()
         img = img_rot_new
 
@@ -211,7 +211,7 @@ def save_with_exif_info(img, *args, **kwargs):
 
     Wraps :py:method:`~PIL.Image.Image.save`.
 
-    :param :py:class:`~PIL.Image.Image` img: The PIL
+    :param :py:class:`~PIL.Image.Image` img: The PIL Image to save.
     :param args: The arguments for the `save` method of the Image class.
     :param kwargs: The keywords for the `save` method of the Image class.
 
