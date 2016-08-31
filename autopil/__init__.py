@@ -1,7 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
 autopil
 =======
-
-|Build Status| |Coverage Status|
 
 PIL extension performing automatic rotation of opened JPEG images.
 
@@ -64,22 +65,19 @@ The package can also be used without monkey patching `PIL` and instead using the
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
    # Output: "<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DFCE50>, Orientation: 1"
 
-Tests
-~~~~~
+"""
 
-TBD.
+import re
 
-References
-----------
-
-.. [1] `Exif <https://en.wikipedia.org/wiki/Exif>`_
-
-.. [2] `Exif orientation <http://sylvana.net/jpegcrop/exif_orientation.html>`_
+from ._autorotate import *
 
 
-.. |Build Status| image:: https://travis-ci.org/hbldh/autopil.svg?branch=master
-   :target: https://travis-ci.org/hbldh/autopil
-.. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/autopil/badge.svg?branch=master
-   :target: https://coveralls.io/github/hbldh/autopil?branch=master
-
-
+# Version information.
+__version__ = '0.3.0rc1'
+version = __version__  # backwards compatibility name
+try:
+    version_info = [int(x) if x.isdigit() else x for x in
+                    re.match('^([0-9]+)\.([0-9]+)[\.]*([0-9]*)(.*)$',
+                             __version__, re.DOTALL).groups()]
+except Exception:
+    version_info = ()

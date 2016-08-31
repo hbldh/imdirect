@@ -31,18 +31,18 @@ if sys.argv[-1] == 'publish':
 def read(f):
     return open(f, encoding='utf-8').read()
 
-with open('imdirect/__init__.py', 'r') as fd:
+with open('autopil/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
 
 setup(
-    name='imdirect',
+    name='autopil',
     version=version,
     author='Henrik Blidh',
     author_email='henrik.blidh@nedomkull.com',
-    url='https://github.com/hbldh/imdirect',
-    description='Determine the _PIL_determine_orientation of a camera image from its EXIF tag',
+    url='https://github.com/hbldh/autopil',
+    description='PIL extension performing automatic rotation of opened JPEG images',
     long_description=read('README.rst'),
     license='MIT',
     keywords=['exif', 'jpeg', 'PIL', 'Pillow'],

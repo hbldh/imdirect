@@ -32,7 +32,7 @@ class ImDirectException(Exception):
 
 
 def autorotate(image):
-    """Rotate and return an image according to its EXIF information.
+    """Rotate and return an image according to its Exif information.
 
     ROTATION_NEEDED = {
         1: 0,
@@ -51,7 +51,7 @@ def autorotate(image):
     """
     orientation_value = image._getexif().get(EXIFKEYS.get('Orientation'))
     if orientation_value is None:
-        raise ImDirectException("No orientation available in EXIF tag.")
+        raise ImDirectException("No orientation available in Exif tag.")
     if orientation_value in (2, 4, 5, 7):
         image = image.transpose(Image.FLIP_LEFT_RIGHT)
 
@@ -70,7 +70,7 @@ def autorotate(image):
 
 
 def update_exif_for_rotated_image(exif):
-    """Modifies the EXIF tag if rotation has been performed.
+    """Modifies the Exif tag if rotation has been performed.
 
     0th, 1st
     --------
@@ -86,8 +86,8 @@ def update_exif_for_rotated_image(exif):
     PixelXDimension = 40962
     PixelYDimension = 40963
 
-    :param dict exif: The parsed EXIF tag
-    :return: The modified EXIF dict.
+    :param dict exif: The parsed Exif tag
+    :return: The modified Exif dict.
 
     """
     orientation_value = exif.get('0th', ).get(
@@ -153,7 +153,7 @@ def autorotate_open(fp, mode="r"):
     """
     img = imopen(fp, mode)
     if img.format == 'JPEG':
-        # Read EXIF tag on image.
+        # Read Exif tag on image.
         exif = piexif.load(fp)
         # If orientation field is missing or equal to 1, nothing needs to be done.
         orientation_value = exif.get('0th', {}).get(piexif.ImageIFD.Orientation)
@@ -164,7 +164,7 @@ def autorotate_open(fp, mode="r"):
         exif = update_exif_for_rotated_image(exif)
 
         # Now, lets restore the output image to PIL.JpegImagePlugin.JpegImageFile class
-        # with the correct update EXIF information.
+        # with the correct update Exif information.
         # Save image as JPEG to get a correct byte representation of the image and then read it back.
         with io.BytesIO() as bio:
             img_rot.save(bio, format='jpeg', exif=piexif.dump(exif))
@@ -208,7 +208,7 @@ def save_with_exif_info(img, *args, **kwargs):
 
 
 def _PIL_determine_orientation(image):
-    """Get the EXIF orientation value.
+    """Get the Exif orientation value.
 
     :param :py:class:`~PIL.Image.Image` image:
     :return: Integer representing the orientation. (See table in documentation.)
@@ -224,7 +224,7 @@ def _PIL_determine_orientation(image):
 
 
 def _piexif_determine_orientation(image_path):
-    """Get the EXIF orientation value.
+    """Get the Exif orientation value.
 
     :param str image_path: The path to the JPEG image.
     :return: Integer representing the orientation. (See table in documentation.)
