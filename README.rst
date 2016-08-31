@@ -14,11 +14,11 @@ digital camera is encoded in the resulting image's Exif [1]_ data
 camera images, this orientation might lead to problems handling the
 image and is very often desired to be counteracted.
 
-This module is a small extension to `Pillow <https://pillow.readthedocs.io/en/3.3.x/>`_,
-`monkey patching <https://en.wikipedia.org/wiki/Monkey_patch>`_
+This module is a small extension to `Pillow <https://pillow.readthedocs.io/en/3.3.x/>`_ that
+`monkey patches <https://en.wikipedia.org/wiki/Monkey_patch>`_
 the `PIL.Image.open <http://pillow.readthedocs.io/en/3.3.x/reference/Image.html#PIL.Image.open>`_ method
 to automatically rotate the image [2]_ (by lossless methods) and update
-the Exif tag accordingly if the image is a JPEG.
+the Exif tag accordingly, given that image is a JPEG.
 
 The package also features a save method that includes the Exif data
 by default when saving JPEGs.
@@ -40,11 +40,11 @@ Demonstration of the monkey patching and how it works:
    from PIL import Image
    import imdirect
 
-   img = Image.open('2016-08-28 15.11.44.jpg')
+   img = Image.open('image.jpg')
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
 
    imdirect.monkey_patch()
-   img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
+   img_autorotated = Image.open('image.jpg')
    print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
 
 The output of the above:
@@ -54,14 +54,26 @@ The output of the above:
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F44B5E4FF10>, Orientation: 6
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
 
-The package can also be used without monkey patching ``PIL`` and instead using the
+The package can also be used without monkey patching, by applying the
 ``imdirect.imdirect_open`` method directly:
 
 .. code:: python
 
    from imdirect import imdirect_open
-   img = imdirect_open('2016-08-28 15.11.44.jpg')
+   img = imdirect_open('image.jpg')
 
+or by using the ``imdirect.autorotate`` on a ``PIL.Image.Image`` object:
+
+.. code:: python
+
+   from PIL import Image
+   import imdirect
+
+   img = Image.open('image.jpg')
+   img_rotated = imdirect.autorotate(img)
+
+The last method does not return a ``PIL.JpegImagePlugin.JpegImageFile``, but can still be used
+if the Exif information of the original image is undesired.
 
 Tests
 ~~~~~
@@ -84,7 +96,7 @@ Tests can be run with `pytest <http://doc.pytest.org/en/latest/>`_:
 References
 ----------
 
-.. [1] Exif on Wikipedia (`https://en.wikipedia.org/wiki/Exif`_)
+.. [1] Exif on Wikipedia (https://en.wikipedia.org/wiki/Exif)
 
 .. [2] Exif orientation (http://sylvana.net/jpegcrop/exif_orientation.html)
 
@@ -93,5 +105,3 @@ References
    :target: https://travis-ci.org/hbldh/imdirect
 .. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/imdirect/badge.svg?branch=master
    :target: https://coveralls.io/github/hbldh/imdirect?branch=master
-
-
