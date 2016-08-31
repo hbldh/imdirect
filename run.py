@@ -25,6 +25,6 @@ print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif()
 
 autopil.monkey_patch(False)
 
-from autopil import autorotate_open
-img = autorotate_open('2016-08-28 15.11.44.jpg')
+from autopil import autopil_open
+img = autopil_open('2016-08-28 15.11.44.jpg')
 print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))

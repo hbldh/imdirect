@@ -55,13 +55,13 @@ The output of the above:
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
 
 The package can also be used without monkey patching `PIL` and instead using the
-`autopil.autorotate_open` method directly:
+`autopil.autopil_open` method directly:
 
 .. code:: python
 
-   from autopil import autorotate_open
+   from autopil import autopil_open
 
-   img = autorotate_open('2016-08-28 15.11.44.jpg')
+   img = autopil_open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
    # Output: "<PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DFCE50>, Orientation: 1"
 
@@ -73,7 +73,7 @@ from ._autorotate import *
 
 
 # Version information.
-__version__ = '0.3.0rc1'
+__version__ = '0.3.0'
 version = __version__  # backwards compatibility name
 try:
     version_info = [int(x) if x.isdigit() else x for x in

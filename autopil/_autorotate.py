@@ -19,7 +19,7 @@ from PIL import Image, ExifTags
 from PIL.Image import open as imopen
 import piexif
 
-__all__ = ["autorotate", "autorotate_open",
+__all__ = ["autorotate", "autopil_open",
            "monkey_patch",
            "update_exif_for_rotated_image",
            "save_with_exif_info", "ImDirectException"]
@@ -134,12 +134,11 @@ def update_exif_for_rotated_image(exif):
     return exif
 
 
-def autorotate_open(fp, mode="r"):
+def autopil_open(fp, mode="r"):
     """Opens, identifies the given image file, and rotates it if it is a JPEG.
 
     Note that this method does NOT employ the lazy loading methodology that
     the PIL Images otherwise use. This is done to avoid having to save new
-
 
     :param fp: A filename (string), pathlib.Path object or a file object.
        The file object must implement :py:meth:`~file.read`,
@@ -185,7 +184,7 @@ def monkey_patch(enabled=True):
 
     """
     if enabled:
-        Image.open = autorotate_open
+        Image.open = autopil_open
     else:
         Image.open = imopen
 
