@@ -17,7 +17,7 @@ from __future__ import absolute_import
 import os
 
 from PIL import Image
-import autopil
+import imdirect
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,13 +30,13 @@ def test_autorotate_1():
     assert img.height == 225
     assert img._getexif().get(274) == 6
 
-    img_rot = autopil.autorotate(img)
+    img_rot = imdirect.autorotate(img)
     assert img_rot.width == 225
     assert img_rot.height == 300
     assert not hasattr(img_rot, '_getexif')
 
 
-def test_autopil_open_with_string_path():
+def test_imdirect_open_with_string_path():
     image_path = os.path.join(this_dir, 'testfile_6.jpg')
 
     img = Image.open(image_path)
@@ -44,13 +44,13 @@ def test_autopil_open_with_string_path():
     assert img.height == 225
     assert img._getexif().get(274) == 6
 
-    img_rot = autopil.autopil_open(image_path)
+    img_rot = imdirect.imdirect_open(image_path)
     assert img_rot.width == 225
     assert img_rot.height == 300
     assert img_rot._getexif().get(274) == 1
 
 
-def test_autopil_open_with_filelike():
+def test_imdirect_open_with_filelike():
     image_path = os.path.join(this_dir, 'testfile_6.jpg')
     with open(image_path, 'rb') as f:
         img = Image.open(f)
@@ -59,7 +59,7 @@ def test_autopil_open_with_filelike():
     assert img._getexif().get(274) == 6
 
     with open(image_path, 'rb') as f:
-        img_rot = autopil.autopil_open(f)
+        img_rot = imdirect.imdirect_open(f)
     assert img_rot.width == 225
     assert img_rot.height == 300
     assert img_rot._getexif().get(274) == 1

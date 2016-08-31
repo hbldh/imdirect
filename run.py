@@ -14,17 +14,20 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from PIL import Image
-import autopil
+import imdirect
 
-img = Image.open('2016-08-28 15.11.44.jpg')
+image_path = 'tests/testfile_6.jpg'
+
+img = Image.open(image_path)
 print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
 
-autopil.monkey_patch()
-img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
+imdirect.monkey_patch()
+img_autorotated = Image.open(image_path)
 print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
+imdirect.monkey_patch(False)
 
-autopil.monkey_patch(False)
-
-from autopil import autopil_open
-img = autopil_open('2016-08-28 15.11.44.jpg')
+from imdirect import imdirect_open
+img = imdirect_open(image_path)
 print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
+
+

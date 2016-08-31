@@ -1,5 +1,5 @@
-autopil
-=======
+imdirect
+========
 
 |Build Status| |Coverage Status|
 
@@ -28,7 +28,7 @@ Installation
 
 ::
 
-    pip install git+https://www.github.com/hbldh/autopil
+    pip install git+https://www.github.com/hbldh/imdirect
 
 Usage
 -----
@@ -38,12 +38,12 @@ Demonstration of the monkey patching and how it works:
 .. code:: python
 
    from PIL import Image
-   import autopil
+   import imdirect
 
    img = Image.open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
 
-   autopil.monkey_patch()
+   imdirect.monkey_patch()
    img_autorotated = Image.open('2016-08-28 15.11.44.jpg')
    print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
 
@@ -55,12 +55,12 @@ The output of the above:
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
 
 The package can also be used without monkey patching ``PIL`` and instead using the
-``autopil.autopil_open`` method directly:
+``imdirect.imdirect_open`` method directly:
 
 .. code:: python
 
-   from autopil import autopil_open
-   img = autopil_open('2016-08-28 15.11.44.jpg')
+   from imdirect import imdirect_open
+   img = imdirect_open('2016-08-28 15.11.44.jpg')
 
 
 Tests
@@ -73,7 +73,7 @@ Tests can be run with `pytest <http://doc.pytest.org/en/latest/>`_:
    Testing started at 13:28 ...
    ============================= test session starts ==============================
    platform linux2 -- Python 2.7.12, pytest-3.0.1, py-1.4.31, pluggy-0.3.1
-   rootdir: /home/hbldh/Repos/autopil, inifile:
+   rootdir: /home/hbldh/Repos/imdirect, inifile:
    collected 4 items
 
    test_autorotate.py ...
@@ -89,9 +89,9 @@ References
 .. [2] Exif orientation (http://sylvana.net/jpegcrop/exif_orientation.html)
 
 
-.. |Build Status| image:: https://travis-ci.org/hbldh/autopil.svg?branch=master
-   :target: https://travis-ci.org/hbldh/autopil
-.. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/autopil/badge.svg?branch=master
-   :target: https://coveralls.io/github/hbldh/autopil?branch=master
+.. |Build Status| image:: https://travis-ci.org/hbldh/imdirect.svg?branch=master
+   :target: https://travis-ci.org/hbldh/imdirect
+.. |Coverage Status| image:: https://coveralls.io/repos/github/hbldh/imdirect/badge.svg?branch=master
+   :target: https://coveralls.io/github/hbldh/imdirect?branch=master
 
 
