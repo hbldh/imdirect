@@ -1,71 +1,113 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-:mod:`setup.py`
-===============
 
-.. moduleauthor:: hbldh <henrik.blidh@nedomkull.com>
-Created on 2015-11-05
+# Note: To use the 'upload' functionality of this file, you must:
+#   $ pip install twine
 
-"""
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-
+import io
 import os
 import sys
 import re
-from codecs import open
-from setuptools import setup, find_packages
+from shutil import rmtree
 
+from setuptools import find_packages, setup, Command
 
-basedir = os.path.dirname(os.path.abspath(__file__))
+# Package meta-data.
+NAME = 'imdirect'
+DESCRIPTION = 'PIL extension performing automatic ' \
+              'rotation of opened JPEG images'
+URL = 'https://github.com/hbldh/imdirect'
+EMAIL = 'henrik.blidh@nedomkull.com'
+AUTHOR = 'Henrik Blidh'
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py register')
-    os.system('python setup.py sdist upload')
-    os.system('python setup.py bdist_wheel upload')
-    sys.exit()
+# What packages are required for this module to be executed?
+REQUIRED = [
+    'Pillow',
+    'piexif'
+]
 
+# ------------------------------------------------
 
-def read(f):
-    return open(f, encoding='utf-8').read()
+here = os.path.abspath(os.path.dirname(__file__))
 
+# Import the README and use it as the long-description.
+with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = '\n' + f.read()
+
+about = {}
 with open('imdirect/__init__.py', 'r') as fd:
-    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
-                        fd.read(), re.MULTILINE).group(1)
+    about['__version__'] = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+        fd.read(), re.MULTILINE).group(1)
 
 
+class UploadCommand(Command):
+    """Support setup.py upload."""
+
+    description = 'Build and publish the package.'
+    user_options = []
+
+    @staticmethod
+    def status(s):
+        """Prints things in bold."""
+        print('\033[1m{0}\033[0m'.format(s))
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            self.status('Removing previous builds…')
+            rmtree(os.path.join(here, 'dist'))
+        except OSError:
+            pass
+
+        self.status('Building Source and Wheel (universal) distribution…')
+        os.system('{0} setup.py sdist bdist_wheel --universal'.format(sys.executable))
+
+        self.status('Uploading the package to PyPi via Twine…')
+        os.system('twine upload dist/*')
+
+        sys.exit()
+
+
+# Where the magic happens:
 setup(
-    name='imdirect',
-    version=version,
-    author='Henrik Blidh',
-    author_email='henrik.blidh@nedomkull.com',
-    url='https://github.com/hbldh/imdirect',
-    description='PIL extension performing automatic rotation of opened JPEG images',
-    long_description=read('README.rst'),
+    name=NAME,
+    version=about['__version__'],
+    description=DESCRIPTION,
+    long_description=long_description,
+    author=AUTHOR,
+    author_email=EMAIL,
+    url=URL,
+    packages=find_packages(exclude=('tests',)),
+    install_requires=REQUIRED,
+    include_package_data=True,
     license='MIT',
-    keywords=['exif', 'jpeg', 'PIL', 'Pillow'],
     classifiers=[
-        'Programming Language :: Python :: 2',
+        # Trove classifiers
+        # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Operating System :: OS Independent',
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy'
     ],
-    install_requires=[
-        'Pillow>=3.3.1',
-        'piexif>=1.0.5'
-    ],
-    packages=find_packages(exclude=['tests', 'docs']),
-    test_suite="tests",
-    platforms='any',
-    dependency_links=[],
-    entry_points={},
+    # $ setup.py publish support.
+    cmdclass={
+        'upload': UploadCommand,
+    },
 )
 

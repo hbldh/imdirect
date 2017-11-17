@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import io
+import warnings
 
 from PIL import Image, ExifTags
 from PIL.Image import open as pil_open
@@ -43,7 +44,7 @@ class ImDirectException(Exception):
     """Simple exception class for the module."""
 
 
-def autorotate(image):
+def autorotate(image, orientation=None):
     """Rotate and return an image according to its Exif information.
 
     ROTATION_NEEDED = {
@@ -57,13 +58,19 @@ def autorotate(image):
         8: 90,
     }
 
-    :param :py:class:`~PIL.Image.Image` image: PIL image to rotate
-    :return: A :py:class:`~PIL.Image.Image` image.
+    Args:
+        image (PIL.Image.Image): PIL image to rotate
+        orientation (): Optional orientation value in [1, 8]
+
+    Returns:
+        A :py:class:`~PIL.Image.Image` image.
 
     """
-    orientation_value = image._getexif().get(EXIF_KEYS.get('Orientation'))
+    orientation_value = orientation if orientation else \
+        image._getexif().get(EXIF_KEYS.get('Orientation'))
     if orientation_value is None:
-        raise ImDirectException("No orientation available in Exif tag.")
+        raise ImDirectException("No orientation available in Exif "
+                                "tag or given explicitly.")
     if orientation_value in (2, 4, 5, 7):
         image = image.transpose(Image.FLIP_LEFT_RIGHT)
 
@@ -98,8 +105,11 @@ def update_exif_for_rotated_image(exif):
     PixelXDimension = 40962
     PixelYDimension = 40963
 
-    :param dict exif: The parsed Exif tag
-    :return: The modified Exif dict.
+    Args:
+        exif (dict): The parsed Exif tag
+
+    Returns:
+        The modified Exif dict.
 
     """
     orientation_value = exif.get('0th', ).get(
@@ -140,29 +150,39 @@ def update_exif_for_rotated_image(exif):
                 if x is not None and y is not None:
                     exif['Exif'][piexif.ExifIFD.PixelXDimension] = y
                     exif['Exif'][piexif.ExifIFD.PixelYDimension] = x
-
-    # TODO: Update the thumbnail as well!
+        if exif.get('thumbnail') is not None:
+            try:
+                thumbnail = pil_open(io.BytesIO(exif.get('thumbnail')))
+                thumbnail = autorotate(thumbnail, orientation=orientation_value)
+                with io.BytesIO() as bio:
+                    thumbnail.save(bio, format='jpeg')
+                    bio.seek(0)
+                    exif['thumbnail'] = bio.read()
+            except Exception as e:
+                warnings.warn("deprecated", DeprecationWarning)
 
     return exif
 
 
-def imdirect_open(fp, mode="r"):
+def imdirect_open(fp):
     """Opens, identifies the given image file, and rotates it if it is a JPEG.
 
     Note that this method does NOT employ the lazy loading methodology that
     the PIL Images otherwise use. This is done to avoid having to save new
 
-    :param fp: A filename (string), pathlib.Path object or a file object.
-       The file object must implement :py:meth:`~file.read`,
-       :py:meth:`~file.seek`, and :py:meth:`~file.tell` methods,
-       and be opened in binary mode.
-    :param mode: The mode.  If given, this argument must be "r".
-    :returns: An :py:class:`~PIL.Image.Image` object.
-    :exception IOError: If the file cannot be found, or the image cannot be
-       opened and identified.
+    Args:
+        fp: A filename (string), pathlib.Path object or a file-like object.
+
+    Returns:
+        The image as an :py:class:`~PIL.Image.Image` object.
+
+    Raises:
+        IOError: If the file cannot be found, or the image cannot be
+            opened and identified.
 
     """
-    img = pil_open(fp, mode)
+
+    img = pil_open(fp, 'r')
     if img.format == 'JPEG':
         # Read Exif tag on image.
         if isinstance(fp, string_types):
@@ -179,15 +199,18 @@ def imdirect_open(fp, mode="r"):
         img_rot = autorotate(img)
         exif = update_exif_for_rotated_image(exif)
 
-        # Now, lets restore the output image to PIL.JpegImagePlugin.JpegImageFile class
-        # with the correct, updated Exif information.
-        # Save image as JPEG to get a correct byte representation of the image and then read it back.
+        # Now, lets restore the output image to
+        # PIL.JpegImagePlugin.JpegImageFile class with the correct,
+        # updated Exif information.
+        # Save image as JPEG to get a correct byte representation of
+        # the image and then read it back.
         with io.BytesIO() as bio:
             img_rot.save(bio, format='jpeg', exif=piexif.dump(exif))
             bio.seek(0)
-            img_rot_new = pil_open(bio, mode)
-            # Since we use a BytesIO we need to avoid the lazy loading of the PIL image.
-            # Therefore, we explicitly load the data here.
+            img_rot_new = pil_open(bio, 'r')
+            # Since we use a BytesIO we need to avoid the lazy
+            # loading of the PIL image. Therefore, we explicitly
+            # load the data here.
             img_rot_new.load()
         img = img_rot_new
 
@@ -197,9 +220,11 @@ def imdirect_open(fp, mode="r"):
 def monkey_patch(enabled=True):
     """Monkey patching PIL.Image.open method
 
-    :param bool enabled: If the monkey patch should be activated or deactivated.
+    Args:
+        enabled (bool): If the monkey patch should be activated or deactivated.
 
     """
+
     if enabled:
         Image.open = imdirect_open
     else:
@@ -209,11 +234,10 @@ def monkey_patch(enabled=True):
 def save_with_exif_info(img, *args, **kwargs):
     """Saves an image using PIL, preserving the exif information.
 
-    Wraps :py:method:`~PIL.Image.Image.save`.
-
-    :param :py:class:`~PIL.Image.Image` img: The PIL Image to save.
-    :param args: The arguments for the `save` method of the Image class.
-    :param kwargs: The keywords for the `save` method of the Image class.
+    Args:
+        img (PIL.Image.Image):
+        *args: The arguments for the `save` method of the Image class.
+        **kwargs: The keywords for the `save` method of the Image class.
 
     """
     if 'exif' in kwargs:
