@@ -10,6 +10,7 @@ python:
 matrix:
   allow_failures:
     - python: "nightly"
+    - python: 3.6
 branches:
   only:
     - master
