@@ -35,40 +35,33 @@ Demonstration of the monkey patching and how it works:
 
 .. code:: python
 
-   from PIL import Image
-   import imdirect
-
-   img = Image.open('image.jpg')
-   print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
-
-   imdirect.monkey_patch()
-   img_autorotated = Image.open('image.jpg')
-   print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
-
-The output of the above:
-
-.. code:: sh
-
+   >>> from PIL import Image
+   >>> import imdirect
+   >>> img = Image.open('image.jpg')
+   >>> print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F44B5E4FF10>, Orientation: 6
+   >>> imdirect.monkey_patch()
+   >>> img_autorotated = Image.open('image.jpg')
+   >>> print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
    <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
+
 
 The package can also be used without monkey patching, by applying the
 ``imdirect.imdirect_open`` method directly:
 
 .. code:: python
 
-   from imdirect import imdirect_open
-   img = imdirect_open('image.jpg')
+   >>> from imdirect import imdirect_open
+   >>> img = imdirect_open('image.jpg')
 
 or by using the ``imdirect.autorotate`` on a ``PIL.Image.Image`` object:
 
 .. code:: python
 
-   from PIL import Image
-   import imdirect
-
-   img = Image.open('image.jpg')
-   img_rotated = imdirect.autorotate(img)
+   >>> from PIL import Image
+   >>> import imdirect
+   >>> img = Image.open('image.jpg')
+   >>> img_rotated = imdirect.autorotate(img)
 
 The last method does not return a ``PIL.JpegImagePlugin.JpegImageFile``,
 but can still be used if the Exif information of the original image is
