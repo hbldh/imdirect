@@ -23,7 +23,8 @@ print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
 
 imdirect.monkey_patch()
 img_autorotated = Image.open(image_path)
-print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
+print("{0}, Orientation: {1}".format(
+    img_autorotated, img_autorotated._getexif().get(274)))
 imdirect.monkey_patch(False)
 
 from imdirect import imdirect_open

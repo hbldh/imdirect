@@ -70,8 +70,9 @@ or by using the ``imdirect.autorotate`` on a ``PIL.Image.Image`` object:
    img = Image.open('image.jpg')
    img_rotated = imdirect.autorotate(img)
 
-The last method does not return a ``PIL.JpegImagePlugin.JpegImageFile``, but can still be used
-if the Exif information of the original image is undesired.
+The last method does not return a ``PIL.JpegImagePlugin.JpegImageFile``,
+but can still be used if the Exif information of the original image is
+undesired.
 
 Tests
 ~~~~~
@@ -99,7 +100,7 @@ from ._autorotate import *
 
 
 # Version information.
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 version = __version__  # backwards compatibility name
 try:
     version_info = [int(x) if x.isdigit() else x for x in
