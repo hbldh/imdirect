@@ -76,8 +76,10 @@ def autorotate(image, orientation=None):
 
     if orientation_value in (1, 2):
         i = image
-    elif orientation_value in (3, 4):
+    elif orientation_value == 4:
         i = image.transpose(Image.FLIP_TOP_BOTTOM)
+    elif orientation_value == 3:
+        i = image.transpose(Image.ROTATE_180)
     elif orientation_value in (5, 6):
         i = image.transpose(Image.ROTATE_270)
     elif orientation_value in (7, 8):
