@@ -71,19 +71,20 @@ def autorotate(image, orientation=None):
     if orientation_value is None:
         raise ImDirectException("No orientation available in Exif "
                                 "tag or given explicitly.")
-    if orientation_value in (2, 4, 5, 7):
-        image = image.transpose(Image.FLIP_LEFT_RIGHT)
 
     if orientation_value in (1, 2):
         i = image
     elif orientation_value in (3, 4):
-        i = image.transpose(Image.FLIP_TOP_BOTTOM)
+        i = image.transpose(Image.ROTATE_180)
     elif orientation_value in (5, 6):
         i = image.transpose(Image.ROTATE_270)
     elif orientation_value in (7, 8):
         i = image.transpose(Image.ROTATE_90)
     else:
         i = image
+
+    if orientation_value in (2, 4, 5, 7):
+        i = i.transpose(Image.FLIP_LEFT_RIGHT)
 
     return i
 
