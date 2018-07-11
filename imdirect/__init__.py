@@ -93,18 +93,8 @@ Tests can be run with `pytest <http://doc.pytest.org/en/latest/>`_:
    =========================== 4 passed in 0.08 seconds ===========================
 
 """
-
-import re
-
 from ._autorotate import *
 
-
 # Version information.
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 version = __version__  # backwards compatibility name
-try:
-    version_info = [int(x) if x.isdigit() else x for x in
-                    re.match('^([0-9]+)\.([0-9]+)[\.]*([0-9]*)(.*)$',
-                             __version__, re.DOTALL).groups()]
-except Exception:
-    version_info = ()
