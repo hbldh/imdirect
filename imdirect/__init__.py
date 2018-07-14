@@ -35,33 +35,40 @@ Demonstration of the monkey patching and how it works:
 
 .. code:: python
 
-   >>> from PIL import Image
-   >>> import imdirect
-   >>> img = Image.open('image.jpg')
-   >>> print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
-   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F44B5E4FF10>, Orientation: 6
-   >>> imdirect.monkey_patch()
-   >>> img_autorotated = Image.open('image.jpg')
-   >>> print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
-   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
+   from PIL import Image
+   import imdirect
 
+   img = Image.open('image.jpg')
+   print("{0}, Orientation: {1}".format(img, img._getexif().get(274)))
+
+   imdirect.monkey_patch()
+   img_autorotated = Image.open('image.jpg')
+   print("{0}, Orientation: {1}".format(img_autorotated, img_autorotated._getexif().get(274)))
+
+The output of the above:
+
+.. code:: sh
+
+   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=4032x3024 at 0x7F44B5E4FF10>, Orientation: 6
+   <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3024x4032 at 0x7F44B5DF5150>, Orientation: 1
 
 The package can also be used without monkey patching, by applying the
 ``imdirect.imdirect_open`` method directly:
 
 .. code:: python
 
-   >>> from imdirect import imdirect_open
-   >>> img = imdirect_open('image.jpg')
+   from imdirect import imdirect_open
+   img = imdirect_open('image.jpg')
 
 or by using the ``imdirect.autorotate`` on a ``PIL.Image.Image`` object:
 
 .. code:: python
 
-   >>> from PIL import Image
-   >>> import imdirect
-   >>> img = Image.open('image.jpg')
-   >>> img_rotated = imdirect.autorotate(img)
+   from PIL import Image
+   import imdirect
+
+   img = Image.open('image.jpg')
+   img_rotated = imdirect.autorotate(img)
 
 The last method does not return a ``PIL.JpegImagePlugin.JpegImageFile``,
 but can still be used if the Exif information of the original image is
@@ -86,18 +93,8 @@ Tests can be run with `pytest <http://doc.pytest.org/en/latest/>`_:
    =========================== 4 passed in 0.08 seconds ===========================
 
 """
-
-import re
-
 from ._autorotate import *
-
 
 # Version information.
 __version__ = '0.6.0'
 version = __version__  # backwards compatibility name
-try:
-    version_info = [int(x) if x.isdigit() else x for x in
-                    re.match('^([0-9]+)\.([0-9]+)[\.]*([0-9]*)(.*)$',
-                             __version__, re.DOTALL).groups()]
-except Exception:
-    version_info = ()
