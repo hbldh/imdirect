@@ -5,6 +5,14 @@ imdirect
 
 PIL extension performing automatic rotation of opened JPEG images.
 
+**imdirect has been archived due to PIL having a built in functionality to perform the same tasks. If you're using Pillow >= 6.0.0, you can use the built-in ImageOps.exif_transpose function do correctly rotate an image according to its exif tag:**
+
+.. code:: python
+
+    from PIL import ImageOps
+    image = ImageOps.exif_transpose(image)
+    
+
 Description
 -----------
 
